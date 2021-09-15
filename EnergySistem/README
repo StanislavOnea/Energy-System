@@ -1,0 +1,31 @@
+Input/Output:
+	Pentru cititrea datelor de input din fisierele json am folosit API-ul jackson. Am creat clasele de input cu varibilele conform datelor din .json.
+
+Clasele create sunt:
+	Input - pentru imbricarea tuturor datelor intr-o unica clasa.
+	InitialData - cu consumatori si distributori intitiali.
+	MonthlyInput - care imbrica clasa cu noii consumatori si clasa cu schimbari de preturi(CostsChanges
+	ConsumatorInput/DistributorInput - clasele ce vor stoca conusmatorii si distributori
+Inputul se citeste in main.
+Metodele clasei InputLoader vor crea noi obiecte ce se vor folosi in timpul implimentarii.
+
+Pentru output am creat noi clase cu sufixul corespunzator (Output) care se vor folosi doar pentru generarea output-ului, se adauga clasa care va stoca contractele la sf. rundei.
+Output-ul se va genera in metodele clasei OutputGenerator.
+
+Implimentare:
+	In pachetul "implimentation" se afla clasele ce se folosesc pentru crearea obiectelor cu care se efectuiaza implimentarea;
+
+Clasele create sunt:
+	Consumer - ce contine datele consumatorului dar si o metoda care intoarce suma care trebuie platita daca cunsumatorul nu plateste prima luna, folosind formula din enuntul temei.
+	Distributor - contine datele distributorilor in care am adaugat si o lista de clienti curenti, si metodele:
+		betterPrice - care returneaza distributorul cu cel mai avantajos contract si pe care am implimentato folosind Collection.sort si luand primul element.
+		chooseContract - in care in lista distributorului cu cel mai bun pret se vor adauga consumatori si se vor seta datele contractului.
+		contractPrice - in care se calculeaza suma contractului in fucntie de nr. de clienti.
+	GameChanges - ce contine metoda care va seta actualizarile lunare.
+	TheGame - este clasa de serviciu care face implimentarea propriu-zisa a "jocului". Am facut un for de numberOfTurns + 1 care reprezinta fiecare luna a simularii, am apelat functia getChanges pentru a citi actualizarile lunare ce se schimb la inceputul fiecarii luni, in urmatorul for setez contractul si cheltuilile distributorilor in funcite de nr de cleinti dar si sterg din aceasta lista clientii care au dat faliment, in urmatorul for adaug vinitul lunar al consumatorilor dar si verific daca nu s-a terminat contractul acestor si apoi sterg din lista clientilor pe cei ce au durata contractului 0. Creez un distributor care va fi distributorul cu cel mai mic contract prin functia betterPrice a carei functionalitate am explicat-o anterior. Aleg consumatorii ce nu au contract si ii setez in lista de clienti a distributurului primit la pasul anterior. Actualizez cheltuielile distributorilor in functie de nr. nou de clienti si scad aceste cheltuieli din buget.Apoi parcurg distributorii si clientii lor setez nr de facturi cu +1(ElectricBills) si daca consumatorul are destule resurse scad costul contractului, adaug contractul la distributor si scad o factura fiindca a fost platita. Daca nu are resurse setez nr. nu scad nr de facturi si memorez contractul din luna curenta, care va trebuie platita in luna viitoare. Scad o luna. Daca clientul are 2 facturi de platit, verific daca are destui bani pentru a plati luna curenta + 1*2 luna trecuta, daca nu consumatorul da faliment si este scos din joc(ce se face in for-ul urmator).
+Acesta clasa implimenteaza Singleton pattern care restricteaza clasa la o singura instanta si are menirea de a avea acces controlat la o singură copie.
+
+
+	Players/PlayersFactory - sunt clase care implimenteaza factory pattern-ul si care se foloseste pentru crearea "jucatorilor" in functie de tipul lor fie distributor fie consumator,
+clasele Ditributor si Consumer vor extinde clasa abastracta Player, si se vor folosi in InputLoader pentru crearea acestor obiecte, dar si a noilor consumatori in clasa GameChanges.
+  In functia main are loc citirea/scrierea datelor input/output folosind objectMapper, apelarea functiilor de parsare si introducera datelor, dar si implimentarea propriu-zisa a jucului.
